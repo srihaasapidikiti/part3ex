@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import argparse
 import os
 import time
@@ -8,12 +6,10 @@ from pprint import pprint
 import json
 from six.moves import input
 from __main__ import *
-import googleapiclient.discovery
-import google.auth
 
-credentials, project = google.auth.default()
-service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
-
+#credentials, project = google.auth.default()
+#service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
+compute = service
 #
 # Stub code - just lists all instances
 #
@@ -163,7 +159,7 @@ def wait_for_operation(compute, project, zone, operation):
 # [START run]
 def main(project, zone, instance_name, wait=True):
     # compute = googleapiclient.discovery.build('compute', 'v1')
-    compute= service
+    #compute= service
     print('Creating instance.')
     operation = create_instance(compute, project, zone, instance_name)
     wait_for_operation(compute, project, zone, operation['name'])
