@@ -4,23 +4,26 @@ import time
 import requests
 from pprint import pprint
 import json
+import googleapiclient.discovery
+import google.auth
+import google.oauth2.service_account as service_account
 from six.moves import input
 from __main__ import *
 
-#credentials, project = google.auth.default()
-#service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
-compute = service
+credentials = service_account.Credentials.from_service_account_file(filename='green-entity-251200-c4a6d480add4.json')
+project = os.getenv('GOOGLE_CLOUD_PROJECT') or 'green-entity-251200'
+service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
 #
 # Stub code - just lists all instances
 #
 # [START list_instances]
-def list_instances(compute, project, zone):
-    result = compute.instances().list(project=project, zone=zone).execute()
+def list_instances(project, zone):
+    result = service.instances().list(project=project, zone=zone).execute()
     return result['items'] if 'items' in result else None
 # [END list_instances]
 
 # [START create_instance]
-def create_instance(compute, project, zone, name):
+def create_instance(project, zone, name):
     # Get the latest Debian Jessie image.
     image_response = compute.images().getFromFamily(
         project='ubuntu-os-cloud', family='ubuntu-1804-lts').execute()
@@ -129,8 +132,8 @@ def set_tags(project, zone, instance, fingerprint):
 
 
 # [START delete_instance]
-def delete_instance(compute, project, zone, name):
-    return compute.instances().delete(
+def delete_instance(project, zone, name):
+    return service.instances().delete(
         project=project,
         zone=zone,
         instance=name).execute()
@@ -138,10 +141,10 @@ def delete_instance(compute, project, zone, name):
 
 
 # [START wait_for_operation]
-def wait_for_operation(compute, project, zone, operation):
+def wait_for_operation(project, zone, operation):
     print('Waiting for operation to finish...')
     while True:
-        result = compute.zoneOperations().get(
+        result = service.zoneOperations().get(
             project=project,
             zone=zone,
             operation=operation).execute()
@@ -161,8 +164,8 @@ def main(project, zone, instance_name, wait=True):
     # compute = googleapiclient.discovery.build('compute', 'v1')
     #compute= service
     print('Creating instance.')
-    operation = create_instance(compute, project, zone, instance_name)
-    wait_for_operation(compute, project, zone, operation['name'])
+    operation = create_instance(project, zone, instance_name)
+    wait_for_operation(project, zone, operation['name'])
     flag = 1
     request = service.firewalls().list(project=project)
     while request is not None:
@@ -177,9 +180,9 @@ def main(project, zone, instance_name, wait=True):
         request = service.firewalls().list_next(previous_request=request, previous_response=response)
     if flag == 1 :
         operation= create_firewall(project) 
-        wait_for_operation(compute, project, zone, operation['name'])
+        wait_for_operation( project, zone, operation['name'])
 
-    instances = list_instances(compute, project, zone)
+    instances = list_instances(project, zone)
 
     print('Instances in project %s and zone %s:' % (project, zone))
     response = get_info(project, zone, instance_name)
@@ -188,7 +191,7 @@ def main(project, zone, instance_name, wait=True):
     publicIP = response["networkInterfaces"][0]["accessConfigs"][0]["natIP"]
     print(publicIP)
     operation= set_tags(project, zone, instance_name, fingerprint)
-    wait_for_operation(compute, project, zone, operation['name'])
+    wait_for_operation( project, zone, operation['name'])
     for instance in instances:
         print(' - ' + instance['name'])
     # if wait:
@@ -213,6 +216,6 @@ if __name__ == '__main__':
         '--name', default='demo-instance2', help='New instance name.')
 
     args = parser.parse_args()
-
+    
     main(args.project_id, args.zone, args.name)
 # [END run]
