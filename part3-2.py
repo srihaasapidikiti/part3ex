@@ -8,7 +8,7 @@ import googleapiclient.discovery
 from six.moves import input
 from __main__ import *
 
-credentials = service_account.Credentials.from_service_account_file(filename='green-entity-251200-c4a6d480add4.json')
+credentials = service_account.Credentials.from_service_account_file(filename='process.json')
 project = os.getenv('GOOGLE_CLOUD_PROJECT') or 'green-entity-251200'
 service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
 #
@@ -23,7 +23,7 @@ def list_instances(project, zone):
 # [START create_instance]
 def create_instance(project, zone, name):
     # Get the latest Debian Jessie image.
-    image_response = compute.images().getFromFamily(
+    image_response = service.images().getFromFamily(
         project='ubuntu-os-cloud', family='ubuntu-1804-lts').execute()
     source_disk_image = image_response['selfLink']
 
