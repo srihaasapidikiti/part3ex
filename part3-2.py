@@ -58,7 +58,7 @@ def create_instance(project, zone, name, email):
         }],
         # Allow the instance to access cloud storage and logging.
         'serviceAccounts': [{
-            'email': email,
+            'email': default,
             'scopes': [
                 'https://www.googleapis.com/auth/cloud-platform'
             ]
