@@ -5,12 +5,12 @@ import requests
 from pprint import pprint
 import json
 import googleapiclient.discovery
-from six.moves import input
+from six.monves import input
 from __main__ import *
 
-credentials = service_account.Credentials.from_service_account_file(filename='process.json')
-project = os.getenv('GOOGLE_CLOUD_PROJECT') or 'green-entity-251200'
-service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
+#credentials = service_account.Credentials.from_service_account_file(filename='process.json')
+#project = os.getenv('GOOGLE_CLOUD_PROJECT') or 'green-entity-251200'
+service = googleapiclient.discovery.build('compute', 'v1')
 #
 # Stub code - just lists all instances
 #
@@ -21,7 +21,7 @@ def list_instances(project, zone):
 # [END list_instances]
 
 # [START create_instance]
-def create_instance(project, zone, name):
+def create_instance(project, zone, name, email):
     # Get the latest Debian Jessie image.
     image_response = service.images().getFromFamily(
         project='ubuntu-os-cloud', family='ubuntu-1804-lts').execute()
@@ -54,6 +54,14 @@ def create_instance(project, zone, name):
             'network': 'global/networks/default',
             'accessConfigs': [
                 {'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT'}
+            ]
+        }],
+        # Allow the instance to access cloud storage and logging.
+        'serviceAccounts': [{
+            'email': email,
+            'scopes': [
+                'https://www.googleapis.com/auth/devstorage.read_write',
+                'https://www.googleapis.com/auth/logging.write'
             ]
         }],
         # Metadata is readable from the instance and allows you to
@@ -158,11 +166,11 @@ def wait_for_operation(project, zone, operation):
 
 
 # [START run]
-def main(project, zone, instance_name, wait=True):
+def main(project, email, zone, instance_name, wait=True):
     # compute = googleapiclient.discovery.build('compute', 'v1')
     #compute= service
     print('Creating instance.')
-    operation = create_instance(project, zone, instance_name)
+    operation = create_instance(project, zone, instance_name, email)
     wait_for_operation(project, zone, operation['name'])
     flag = 1
     request = service.firewalls().list(project=project)
@@ -206,14 +214,14 @@ if __name__ == '__main__':
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('project_id', help='Your Google Cloud project ID.')
+    parser.add_argument('email', help='New instance name.')
     parser.add_argument(
         '--zone',
         default='us-west1-b',
         help='Compute Engine zone to deploy to.')
     parser.add_argument(
-        '--name', default='demo-instance2', help='New instance name.')
-
+        '--name', default='demo-instance2', help='New instance name.')    
     args = parser.parse_args()
     
-    main(args.project_id, args.zone, args.name)
+    main(args.project_id, args.email, args.zone, args.name)
 # [END run]
