@@ -30,7 +30,7 @@ def create_instance(project, zone, name):
     source_disk_image = image_response['selfLink']
 
     # Configure the machine
-    machine_type = "zones/%s/machineTypes/n1-standard-1" % zone
+    machine_type = "zones/%s/machineTypes/f1-micro" % zone
     startup_script1 = open(
         os.path.join(
             os.path.dirname(__file__), 'startup-script1.sh'), 'r').read()
@@ -213,7 +213,7 @@ if __name__ == '__main__':
         default='us-west1-b',
         help='Compute Engine zone to deploy to.')
     parser.add_argument(
-        '--name', default='demo-instance2', help='New instance name.')    
+        '--name', default='instance3-2', help='New instance name.')    
     args = parser.parse_args()
     
     main(args.project_id, args.zone, args.name)
