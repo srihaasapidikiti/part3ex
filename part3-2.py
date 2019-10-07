@@ -7,10 +7,15 @@ import json
 import googleapiclient.discovery
 from six.moves import input
 from __main__ import *
+import google.auth
+
+credentials, project = google.auth.default()
+service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
+
 
 #credentials = service_account.Credentials.from_service_account_file(filename='process.json')
 #project = os.getenv('GOOGLE_CLOUD_PROJECT') or 'green-entity-251200'
-service = googleapiclient.discovery.build('compute', 'v1')
+#service = googleapiclient.discovery.build('compute', 'v1')
 #
 # Stub code - just lists all instances
 #
