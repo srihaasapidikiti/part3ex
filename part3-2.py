@@ -160,7 +160,7 @@ def wait_for_operation(project, zone, operation):
 
 
 # [START run]
-def main(project, email, zone, instance_name, wait=True):
+def main(project, zone, instance_name, wait=True):
     # compute = googleapiclient.discovery.build('compute', 'v1')
     #compute= service
     print('Creating instance.')
