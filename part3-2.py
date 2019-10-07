@@ -8,14 +8,11 @@ import googleapiclient.discovery
 from six.moves import input
 from __main__ import *
 import google.auth
+import google.oauth2.service_account as service_account
 
-credentials, project = google.auth.default()
-service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
-
-
-#credentials = service_account.Credentials.from_service_account_file(filename='process.json')
-#project = os.getenv('GOOGLE_CLOUD_PROJECT') or 'green-entity-251200'
-#service = googleapiclient.discovery.build('compute', 'v1')
+credentials = service_account.Credentials.from_service_account_file(filename='account.json')
+project = os.getenv('GOOGLE_CLOUD_PROJECT') or 'green-entity-251200'
+service = googleapiclient.discovery.build('compute', 'v1',credentials=credentials)
 #
 # Stub code - just lists all instances
 #
@@ -59,13 +56,6 @@ def create_instance(project, zone, name, email):
             'network': 'global/networks/default',
             'accessConfigs': [
                 {'type': 'ONE_TO_ONE_NAT', 'name': 'External NAT'}
-            ]
-        }],
-        # Allow the instance to access cloud storage and logging.
-        'serviceAccounts': [{
-            'email': default,
-            'scopes': [
-                'https://www.googleapis.com/auth/cloud-platform'
             ]
         }],
         # Metadata is readable from the instance and allows you to
