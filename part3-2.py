@@ -23,7 +23,7 @@ def list_instances(project, zone):
 # [END list_instances]
 
 # [START create_instance]
-def create_instance(project, zone, name, email):
+def create_instance(project, zone, name):
     # Get the latest Debian Jessie image.
     image_response = service.images().getFromFamily(
         project='ubuntu-os-cloud', family='ubuntu-1804-lts').execute()
@@ -164,7 +164,7 @@ def main(project, email, zone, instance_name, wait=True):
     # compute = googleapiclient.discovery.build('compute', 'v1')
     #compute= service
     print('Creating instance.')
-    operation = create_instance(project, zone, instance_name, email)
+    operation = create_instance(project, zone, instance_name)
     wait_for_operation(project, zone, operation['name'])
     flag = 1
     request = service.firewalls().list(project=project)
@@ -208,7 +208,6 @@ if __name__ == '__main__':
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('project_id', help='Your Google Cloud project ID.')
-    parser.add_argument('email', help='New instance name.')
     parser.add_argument(
         '--zone',
         default='us-west1-b',
@@ -217,5 +216,5 @@ if __name__ == '__main__':
         '--name', default='demo-instance2', help='New instance name.')    
     args = parser.parse_args()
     
-    main(args.project_id, args.email, args.zone, args.name)
+    main(args.project_id, args.zone, args.name)
 # [END run]
