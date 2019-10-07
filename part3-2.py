@@ -5,8 +5,6 @@ import requests
 from pprint import pprint
 import json
 import googleapiclient.discovery
-import google.auth
-import google.oauth2.service_account as service_account
 from six.moves import input
 from __main__ import *
 
