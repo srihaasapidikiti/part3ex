@@ -60,8 +60,7 @@ def create_instance(project, zone, name, email):
         'serviceAccounts': [{
             'email': email,
             'scopes': [
-                'https://www.googleapis.com/auth/devstorage.read_write',
-                'https://www.googleapis.com/auth/logging.write'
+                'https://www.googleapis.com/auth/cloud-platform'
             ]
         }],
         # Metadata is readable from the instance and allows you to
